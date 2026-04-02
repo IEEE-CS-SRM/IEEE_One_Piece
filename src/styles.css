@@ -1512,8 +1512,9 @@ select {
 
 .partner-pill .card-tag {
   margin: 0 0 0.55rem;
-  font-size: 0.66rem;
-  letter-spacing: 0.12rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.08rem;
+  line-height: 1;
   white-space: nowrap;
 }
 
