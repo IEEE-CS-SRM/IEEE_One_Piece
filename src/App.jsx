@@ -4,7 +4,24 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const heroFacts = ["Turing Hall", "First 30 teams", "₹199 per team", "1-5 founders"];
+const heroFacts = ["Turing Hall", "One-day summit", "UG + PG founders", "1-5 founders"];
+
+const pricingBands = [
+  {
+    label: "SRMIST KTR Students",
+    price: "₹249 per team",
+    offer: "Coupon Code",
+    code: "TOP30",
+    detail: "First 30 teams get tickets at ₹199",
+  },
+  {
+    label: "External Students",
+    price: "₹299 per team",
+    offer: "Coupon Code",
+    code: "EARLYBIRD50",
+    detail: "Get tickets at ₹249",
+  },
+];
 
 const signalCards = [
   {
@@ -117,6 +134,33 @@ const awards = [
   },
 ];
 
+const partners = [
+  {
+    label: "Media & Energy Partner",
+    name: "Sucksi",
+    logo: "/logos/sucksi-linkedin.png",
+    logoAlt: "Sucksi logo",
+    logoTheme: "dark",
+    text: "Amplifying the summit story, founder energy, and the live event atmosphere around the voyage.",
+  },
+  {
+    label: "Internship Partner",
+    name: "SpazorLabs",
+    logo: "/logos/spazorlabs-logo.png",
+    logoAlt: "SpazorLabs logo",
+    logoTheme: "light",
+    text: "Backing the event with opportunity pathways for standout builders, operators, and startup-ready talent.",
+  },
+  {
+    label: "Platform Partner",
+    name: "GradeX",
+    logo: "/logos/gradex-logo.png",
+    logoAlt: "GradeX logo",
+    logoTheme: "transparent",
+    text: "The SRMIST student platform behind attendance, timetable, marks, exam support, and campus utility workflows.",
+  },
+];
+
 const ruleHighlights = [
   "Funding belongs to the startup idea, not the member.",
   "All mergers and mutinies must be submitted in writing.",
@@ -127,7 +171,8 @@ const ruleGroups = [
   {
     label: "Registration & Conduct",
     items: [
-      "Registration is capped at the first 30 teams, with a fee of ₹199 per team.",
+      "SRMIST KTR teams register at ₹249 per team, with TOP30 unlocking ₹199 for the first 30 teams.",
+      "External teams register at ₹299 per team, with EARLYBIRD50 unlocking ₹249 tickets.",
       "Every startup may compete with 1 to 5 registered members.",
       "Harassment, intimidation, or disruptive conduct during negotiations can lead to immediate disqualification.",
     ],
@@ -308,7 +353,11 @@ function App() {
 
       <header className="page-chrome">
         <a className="brand" href="#hero">
-          ONE PIECE
+          <span className="brand-copy">
+            <span>ONE PIECE</span>
+            <strong>IEEE CS SRM</strong>
+          </span>
+          <img alt="IEEE logo" className="brand-logo" src="/logos/ieee-computer.png" />
         </a>
         <button
           aria-expanded={menuOpen}
@@ -334,6 +383,9 @@ function App() {
           <a href="#rules" onClick={() => setMenuOpen(false)}>
             Rules
           </a>
+          <a href="#partners" onClick={() => setMenuOpen(false)}>
+            Partners
+          </a>
           <a href="#register" onClick={() => setMenuOpen(false)}>
             Register
           </a>
@@ -350,10 +402,21 @@ function App() {
               <span className="hero-title-bottom">for Unicorns</span>
             </h1>
             <p className="hero-text">
-              A One Piece themed startup summit where crews pitch for a single locked funding
-              allocation, survive a live round of alliances and mutinies, and return as rebuilt
-              ventures for the final boardroom showdown.
+              A pirate-themed startup summit where crews pitch once, negotiate through alliances or
+              mutiny, and return as rebuilt ventures for the final boardroom.
             </p>
+
+            <div className="pricing-signal">
+              {pricingBands.map((band) => (
+                <article className="pricing-card" key={band.label}>
+                  <p className="pricing-card-label">{band.label}</p>
+                  <strong>{band.price}</strong>
+                  <p className="pricing-card-offer">{band.offer}</p>
+                  <p className="pricing-card-code">{band.code}</p>
+                  <p className="pricing-card-detail">{band.detail}</p>
+                </article>
+              ))}
+            </div>
 
             <div className="hero-actions">
               <a className="button button-primary" href="#register">
@@ -378,8 +441,8 @@ function App() {
               <p className="panel-kicker">Event Premise</p>
               <h2>Pitch. Merge. Mutiny. Rebuild.</h2>
               <p>
-                Judges play venture capitalists, the treasury is fixed, and every strategic move in
-                the negotiation round changes who reaches the final boardroom.
+                Judges act as venture capitalists, the treasury is fixed, and the negotiation round
+                decides who reaches the final boardroom.
               </p>
 
               <div className="panel-facts">
@@ -520,8 +583,8 @@ function App() {
               <h2>Rules of engagement</h2>
             </div>
             <p className="section-copy">
-              This event only works if every funding move, roster shift, and merger is formally
-              documented. The rulebook is the command system behind the entire summit.
+              Every funding move, roster shift, and merger must be logged. Nothing counts until it is
+              officially recorded.
             </p>
           </div>
 
@@ -530,8 +593,8 @@ function App() {
               <p className="card-tag">Critical directives</p>
               <h3>The negotiation round only matters if it is documented.</h3>
               <p>
-                The rulebook is central to the event format. Funding, roster movement, and final
-                advancement all depend on what is officially registered with the organizers.
+                Funding, roster movement, and final advancement depend only on what is formally
+                submitted to the organizers.
               </p>
             </aside>
 
@@ -562,14 +625,42 @@ function App() {
           </div>
         </section>
 
+        <section className="section reveal" id="partners">
+          <div className="partners-panel">
+            <div className="section-heading section-heading-split">
+              <div>
+                <p className="eyebrow">Signal Fleet</p>
+              <h2>Partners on this voyage</h2>
+            </div>
+            <p className="section-copy">
+              External support across media, energy, and internships powers the summit beyond the
+              stage.
+            </p>
+          </div>
+
+            <div className="partners-grid">
+              {partners.map((partner) => (
+                <article className="partner-card" key={partner.name}>
+                  <p className="card-tag">{partner.label}</p>
+                  <div className={`partner-logo-box partner-logo-box-${partner.logoTheme}`}>
+                    <img alt={partner.logoAlt} className="partner-logo" src={partner.logo} />
+                  </div>
+                  <h3>{partner.name}</h3>
+                  <p>{partner.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="section reveal" id="register">
           <div className="cta-panel">
             <div>
               <p className="eyebrow">Registration Call</p>
               <h2>Build your crew and claim a place on the board</h2>
               <p className="cta-text">
-                Open to undergraduate and postgraduate students with prototypes or MVP-stage
-                startups. Bring a venture worth backing and a crew capable of surviving restructures.
+                Open to UG and PG student founders with prototype or MVP-stage startups. Separate
+                pricing applies for SRMIST KTR and external teams.
               </p>
             </div>
 
@@ -577,10 +668,6 @@ function App() {
               <div>
                 <span>Eligible Teams</span>
                 <strong>1-5 founders</strong>
-              </div>
-              <div>
-                <span>Registration</span>
-                <strong>First 30 teams · ₹199</strong>
               </div>
               <div>
                 <span>Venture Stage</span>

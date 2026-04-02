@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Inter:wght@400;500;600;700;800&family=Pirata+One&family=Space+Grotesk:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Pirata+One&display=swap");
 
 :root {
   color-scheme: dark;
-  font-family: "Inter", sans-serif;
+  font-family: "IM Fell English SC", serif;
   --bg: #0b0908;
   --bg-deep: #050403;
   --surface-low: #15110f;
@@ -36,6 +36,7 @@ body {
   min-height: 100vh;
   background: #050608;
   color: var(--text);
+  font-family: "IM Fell English SC", serif;
 }
 
 a {
@@ -123,16 +124,52 @@ select {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.65rem;
   font-family: "Pirata One", serif;
-  font-size: 1.6rem;
-  font-weight: 400;
-  letter-spacing: 0.08rem;
-  text-transform: uppercase;
   color: var(--cream);
+}
+
+.brand-logo {
+  width: clamp(5rem, 7vw, 6.8rem);
+  height: auto;
+  object-fit: contain;
+  filter:
+    brightness(0) invert(1)
+    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.28));
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1;
+  text-align: left;
+}
+
+.brand-copy strong,
+.brand-copy span {
+  text-transform: uppercase;
   text-shadow:
     0 1px 0 var(--gold-deep),
     0 2px 0 #5f4416,
     0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.brand-copy span {
+  font-family: "Pirata One", serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  letter-spacing: 0.08rem;
+}
+
+.brand-copy strong {
+  font-family: "IM Fell English SC", serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.18rem;
+  color: var(--gold);
 }
 
 .nav {
@@ -332,6 +369,72 @@ select {
   font-size: 1.12rem;
 }
 
+.pricing-signal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 54rem;
+  margin: 2rem auto 0;
+}
+
+.pricing-card {
+  position: relative;
+  padding: 1.25rem 1.3rem;
+  text-align: left;
+  background:
+    radial-gradient(circle at top left, rgba(233, 193, 118, 0.14), transparent 24%),
+    linear-gradient(180deg, rgba(41, 29, 22, 0.94), rgba(16, 12, 10, 0.94));
+  border: 1px solid rgba(233, 193, 118, 0.28);
+  border-top: 2px solid var(--gold);
+  box-shadow: var(--shadow);
+}
+
+.pricing-card-label,
+.pricing-card-offer {
+  margin: 0;
+  font-family: "IM Fell English SC", serif;
+  letter-spacing: 0.16rem;
+  text-transform: uppercase;
+}
+
+.pricing-card-label {
+  color: var(--gold);
+  font-size: 0.76rem;
+}
+
+.pricing-card strong {
+  display: block;
+  margin-top: 0.55rem;
+  font-family: "Pirata One", serif;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--cream);
+}
+
+.pricing-card-offer {
+  margin-top: 0.95rem;
+  color: #f0d38a;
+  font-size: 0.82rem;
+}
+
+.pricing-card-code {
+  margin: 0.35rem 0 0;
+  font-family: "Pirata One", serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.08rem;
+  color: var(--cream);
+  text-shadow:
+    0 1px 0 var(--gold-deep),
+    0 2px 0 #5f4416;
+}
+
+.pricing-card-detail {
+  margin: 0.35rem 0 0;
+  color: var(--soft);
+  line-height: 1.55;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -410,6 +513,7 @@ select {
 .mechanic-card,
 .timeline-card,
 .award-card,
+.partner-card,
 .rule-card,
 .rules-aside,
 .cta-panel {
@@ -423,6 +527,7 @@ select {
 .mechanic-card,
 .timeline-card,
 .award-card,
+.partner-card,
 .rule-card,
 .rules-aside,
 .cta-panel {
@@ -607,6 +712,7 @@ select {
 .mechanic-card,
 .timeline-card,
 .award-card,
+.partner-card,
 .rule-card,
 .rules-aside,
 .cta-meta div {
@@ -623,6 +729,7 @@ select {
 .mechanic-card::before,
 .timeline-card::before,
 .award-card::before,
+.partner-card::before,
 .rule-card::before,
 .rules-aside::before,
 .cta-meta div::before,
@@ -634,6 +741,7 @@ select {
 .mechanic-card::after,
 .timeline-card::after,
 .award-card::after,
+.partner-card::after,
 .rule-card::after,
 .rules-aside::after,
 .cta-meta div::after {
@@ -650,6 +758,7 @@ select {
 .mechanic-card::before,
 .timeline-card::before,
 .award-card::before,
+.partner-card::before,
 .rule-card::before,
 .rules-aside::before,
 .cta-meta div::before {
@@ -675,6 +784,7 @@ select {
 .mechanic-card::after,
 .timeline-card::after,
 .award-card::after,
+.partner-card::after,
 .rule-card::after,
 .rules-aside::after,
 .cta-meta div::after {
@@ -694,6 +804,7 @@ select {
 .mechanic-card > *,
 .timeline-card > *,
 .award-card > *,
+.partner-card > *,
 .rule-card > *,
 .rules-aside > *,
 .cta-meta div > * {
@@ -909,6 +1020,12 @@ select {
   text-align: center;
 }
 
+#schedule .section-heading-split {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 0.9rem;
+}
+
 #schedule .section-copy {
   max-width: 40rem;
   margin: 0 auto;
@@ -981,6 +1098,10 @@ select {
   gap: 1rem;
 }
 
+#awards {
+  padding-bottom: 3.25rem;
+}
+
 #awards .section-heading::after {
   content: "";
   flex: 1;
@@ -1008,7 +1129,92 @@ select {
     rgba(41, 29, 22, 0.94);
 }
 
+#partners {
+  padding-top: 2rem;
+  padding-bottom: 0.8rem;
+  background: transparent;
+}
+
+#partners .section-heading,
+#partners .partners-grid {
+  padding-inline: clamp(1rem, 2.4vw, 2.2rem);
+}
+
+#partners .section-heading {
+  margin-bottom: 0.1rem;
+}
+
+#partners .section-heading-split {
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  align-items: start;
+}
+
+#partners .section-copy {
+  max-width: 36rem;
+  text-align: left;
+}
+
+.partners-panel {
+  padding: clamp(0.7rem, 1.8vw, 1rem) 0;
+  border: 1px solid rgba(78, 70, 57, 0.24);
+  background:
+    radial-gradient(circle at top left, rgba(233, 193, 118, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(17, 13, 11, 0.92), rgba(12, 9, 8, 0.9));
+  box-shadow: var(--shadow);
+}
+
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 0;
+}
+
+.partner-card {
+  min-height: 16rem;
+  padding: 1.7rem;
+  border-radius: 0.2rem;
+}
+
+.partner-card .card-tag {
+  margin: 0 0 0.45rem;
+}
+
+.partner-logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8.8rem;
+  margin: 1rem 0 1.35rem;
+  padding: 0.35rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.partner-logo {
+  width: min(100%, 16rem);
+  max-height: 6.25rem;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.partner-card h3 {
+  margin: 0 0 0.7rem;
+  font-family: "Pirata One", serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--cream);
+}
+
+.partner-card p:last-child {
+  margin: 0;
+}
+
 #rules {
+  padding-top: 3.75rem;
   background:
     linear-gradient(180deg, rgba(18, 14, 12, 0.84), rgba(18, 14, 12, 0.74)),
     rgba(18, 14, 12, 0.74);
@@ -1110,6 +1316,7 @@ select {
 
 #register {
   position: relative;
+  padding-top: 1.5rem;
 }
 
 .cta-panel {
@@ -1160,7 +1367,8 @@ select {
   .overview-grid,
   .rules-command,
   .cta-panel,
-  .awards-grid {
+  .awards-grid,
+  .partners-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1232,11 +1440,20 @@ select {
     width: min(1240px, calc(100% - 1.3rem));
   }
 
+  #partners {
+    padding-top: 1.25rem;
+    padding-bottom: 1rem;
+  }
+
   .site-video {
     transform: scale(1.08);
   }
 
   .rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-signal {
     grid-template-columns: 1fr;
   }
 
@@ -1248,6 +1465,7 @@ select {
   .mechanic-card,
   .timeline-card,
   .award-card,
+  .partner-card,
   .rule-card,
   .rules-aside,
   .cta-panel {
@@ -1266,6 +1484,7 @@ select {
   .mechanic-card::after,
   .timeline-card::after,
   .award-card::after,
+  .partner-card::after,
   .rule-card::after,
   .rules-aside::after,
   .cta-meta div::after {
@@ -1285,6 +1504,23 @@ select {
     display: inline-flex;
     position: relative;
     flex: 0 0 auto;
+  }
+
+  .brand {
+    gap: 1.15rem;
+  }
+
+  .brand-logo {
+    width: 4rem;
+  }
+
+  .brand-copy strong {
+    font-size: 0.68rem;
+    letter-spacing: 0.14rem;
+  }
+
+  .brand-copy span {
+    font-size: 1.2rem;
   }
 
   .nav {
@@ -1325,6 +1561,14 @@ select {
     font-size: clamp(2.8rem, 14vw, 4.8rem);
   }
 
+  #register {
+    padding-top: 1rem;
+  }
+
+  .pricing-card {
+    padding: 1.1rem 1rem;
+  }
+
   .stats-row {
     justify-content: center;
   }
@@ -1338,6 +1582,7 @@ select {
   .mechanic-card,
   .timeline-card,
   .award-card,
+  .partner-card,
   .rule-card,
   .rules-aside,
   .cta-panel {
