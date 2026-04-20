@@ -20,6 +20,168 @@ const pricingBands = [
   },
 ];
 
+const committeeDirectory = [
+  {
+    name: "Ushnish Ghosal",
+    year: "3",
+    position: "Chairperson",
+    raNo: "RA2311003010688",
+    email: "@srmist.edu.in",
+    contactNumber: "78109 82910",
+  },
+  {
+    name: "Aayushman Khatyat",
+    year: "3",
+    position: "Vice - Chairperson",
+    raNo: "RA2311003011227",
+    email: "@srmist.edu.in",
+    contactNumber: "94563 62388",
+  },
+  {
+    name: "Krishna Aggarwal",
+    year: "3",
+    position: "Secretary",
+    raNo: "RA2311003010688",
+    email: "ka2937@srmist.edu.in",
+    contactNumber: "9718212195",
+  },
+  {
+    name: "Harsh Agarwal",
+    year: "3",
+    position: "Treasurer",
+    raNo: "",
+    email: "",
+    contactNumber: "",
+  },
+  {
+    name: "Akshit Ohri",
+    year: "3",
+    position: "WebDev Head",
+    raNo: "RA2311003010138",
+    email: "@srmist.edu.in",
+    contactNumber: "99671 08168",
+  },
+  {
+    name: "Atharv Dorle",
+    year: "3",
+    position: "Technical Head",
+    raNo: "RA2311003010687",
+    email: "@srmist.edu.in",
+    contactNumber: "83197 73605",
+  },
+  {
+    name: "Vanshika Sharma",
+    year: "3",
+    position: "Operation Head",
+    raNo: "RA2311003011981",
+    email: "@srmist.edu.in",
+    contactNumber: "90265 37155",
+  },
+  {
+    name: "Vani jaiswal",
+    year: "3",
+    position: "Social Media Head",
+    raNo: "RA2311003012069",
+    email: "@srmist.edu.in",
+    contactNumber: "82203 38470",
+  },
+  {
+    name: "Shloka nangare",
+    year: "3",
+    position: "Event Head",
+    raNo: "RA2311009010153",
+    email: "@srmist.edu.in",
+    contactNumber: "95277 79888",
+  },
+  {
+    name: "Aafrin Tabassum",
+    year: "3",
+    position: "Content Head",
+    raNo: "RA2311003010671",
+    email: "@srmist.edu.in",
+    contactNumber: "8862946223",
+  },
+  {
+    name: "Saumya Singh",
+    year: "3",
+    position: "PRO",
+    raNo: "RA23111003040055",
+    email: "@srmist.edu.in",
+    contactNumber: "83680 51387",
+  },
+  {
+    name: "Manaswi Singh",
+    year: "3",
+    position: "Creatives Head",
+    raNo: "RA2311003011059",
+    email: "@srmist.edu.in",
+    contactNumber: "72680 58005",
+  },
+  {
+    name: "Aviral Pandey",
+    year: "3",
+    position: "Pr Head",
+    raNo: "RA2311028010105",
+    email: "@srmist.edu.in",
+    contactNumber: "93110 28345",
+  },
+  {
+    name: "Swetha",
+    year: "3",
+    position: "Sponsorship Head",
+    raNo: "",
+    email: "@srmist.edu.in",
+    contactNumber: "9840392017",
+  },
+  {
+    name: "Ethan",
+    year: "3",
+    position: "Photography Head",
+    raNo: "RA2311003012074",
+    email: "@srmist.edu.in",
+    contactNumber: "",
+  },
+];
+
+const commandCrew = [
+  {
+    role: "Chairperson",
+    title:
+      committeeDirectory.find((member) => member.position === "Chairperson")?.name ?? "TBA",
+    text: "",
+  },
+  {
+    role: "Vice Chair",
+    title:
+      committeeDirectory.find((member) => member.position === "Vice - Chairperson")?.name ??
+      "TBA",
+    text: "",
+  },
+  {
+    role: "Secretary",
+    title: committeeDirectory.find((member) => member.position === "Secretary")?.name ?? "TBA",
+    text: "",
+  },
+  {
+    role: "Treasurer",
+    title: committeeDirectory.find((member) => member.position === "Treasurer")?.name ?? "TBA",
+    text: "",
+  },
+];
+
+const convenorCrew = [
+  {
+    role: "Convenor",
+    title: "Godfrey Winster S",
+    text: "",
+  },
+  {
+    role: "Co - convenor",
+    title: "Bhaskar M",
+    text: "",
+  },
+];
+
 const signalCards = [
   {
     title: "Single Allocation",
@@ -321,7 +483,7 @@ function App() {
       });
 
       intro
-        .from(".hero-copy > *", {
+        .from(".hero-copy > *, .hero-command-panel", {
           opacity: 0,
           y: 38,
           stagger: 0.1,
@@ -534,57 +696,89 @@ function App() {
 
       <main className="content">
         <section className="hero section" id="hero">
-          <div className="hero-copy">
-            <p className="eyebrow eyebrow-signal">Flagship Startup Pitch Event 2026</p>
-            <h1>
-              <span className="hero-title-top">ONE PIECE:</span>
-              <span className="hero-title-mark">Treasure Hunt</span>
-              <span className="hero-title-bottom">for Unicorns</span>
-            </h1>
-            <p className="hero-text">
-              A pirate-themed startup summit where crews pitch once, negotiate through alliances or
-              mutiny, and return as rebuilt ventures for the final boardroom.
-            </p>
+          <div className="hero-command-layout">
+            <aside className="hero-command-panel hero-command-panel-left" aria-label="Convenor roles">
+              <p className="panel-kicker">Leadership Helm</p>
+              <h2>Convenors</h2>
 
-            <div className="hero-actions">
-              <a
-                className="button button-primary"
-                href={registrationUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Register
-              </a>
-              <a className="button button-secondary" href="/quiz/index.html">
-                Character Quiz
-              </a>
-              <a className="button button-secondary" href="#rules">
-                Rules
-              </a>
+              <div className="hero-command-grid">
+                {convenorCrew.map((member) => (
+                  <article className="hero-command-card" key={member.role}>
+                    <span>{member.role}</span>
+                    <strong>{member.title}</strong>
+                    {member.text ? <p>{member.text}</p> : null}
+                  </article>
+                ))}
+              </div>
+            </aside>
+
+            <div className="hero-copy">
+              <p className="eyebrow eyebrow-signal">Flagship Startup Pitch Event 2026</p>
+              <h1>
+                <span className="hero-title-top">ONE PIECE:</span>
+                <span className="hero-title-mark">Treasure Hunt</span>
+                <span className="hero-title-bottom">for Unicorns</span>
+              </h1>
+              <p className="hero-text">
+                A pirate-themed startup summit where crews pitch once, negotiate through alliances
+                or mutiny, and return as rebuilt ventures for the final boardroom.
+              </p>
+
+              <div className="hero-actions">
+                <a
+                  className="button button-primary"
+                  href={registrationUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Register
+                </a>
+                <a className="button button-secondary" href="/quiz/index.html">
+                  Character Quiz
+                </a>
+                <a className="button button-secondary" href="#rules">
+                  Rules
+                </a>
+              </div>
+
+              <div className="pricing-signal">
+                {pricingBands.map((band) => (
+                  <article className="pricing-card" key={band.label}>
+                    <p className="pricing-card-label">{band.label}</p>
+                    <div className="pricing-card-price">
+                      <span className="pricing-card-original">{band.originalPrice}</span>
+                      <strong>{band.price}</strong>
+                    </div>
+                    <p className="pricing-card-offer">{band.offer}</p>
+                    <p className="pricing-card-code">{band.code}</p>
+                    <p className="pricing-card-detail">{band.detail}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="stats-row">
+                {heroFacts.map((item) => (
+                  <span className="stat-chip" key={item}>
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <div className="pricing-signal">
-              {pricingBands.map((band) => (
-                <article className="pricing-card" key={band.label}>
-                  <p className="pricing-card-label">{band.label}</p>
-                  <div className="pricing-card-price">
-                    <span className="pricing-card-original">{band.originalPrice}</span>
-                    <strong>{band.price}</strong>
-                  </div>
-                  <p className="pricing-card-offer">{band.offer}</p>
-                  <p className="pricing-card-code">{band.code}</p>
-                  <p className="pricing-card-detail">{band.detail}</p>
-                </article>
-              ))}
-            </div>
+            <aside className="hero-command-panel" aria-label="Core committee roles">
+              <p className="panel-kicker">Command Council</p>
+              <h2>Officers on Deck</h2>
 
-            <div className="stats-row">
-              {heroFacts.map((item) => (
-                <span className="stat-chip" key={item}>
-                  {item}
-                </span>
-              ))}
-            </div>
+              <div className="hero-command-grid">
+                {commandCrew.map((member) => (
+                  <article className="hero-command-card" key={member.role}>
+                    <span>{member.role}</span>
+                    <strong>{member.title}</strong>
+                    {member.text ? <p>{member.text}</p> : null}
+                  </article>
+                ))}
+              </div>
+            </aside>
           </div>
 
           <div className="hero-stage">
