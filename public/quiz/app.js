@@ -55,6 +55,10 @@ function shuffleArray(items) {
   return copy;
 }
 
+function stripOptionPrefix(option) {
+  return String(option).replace(/^[A-D]\.\s*/, '');
+}
+
 function normalizeQuestion(question, index) {
   const options = Array.isArray(question.options) ? question.options.slice(0, 4) : [];
   const answer = String(question.answer || 'A').toUpperCase().charAt(0);
@@ -63,7 +67,7 @@ function normalizeQuestion(question, index) {
     throw new Error(`Question bank entry ${index + 1} is malformed.`);
   }
 
-  const plainOptions = options.map((option) => String(option).replace(/^[A-D]\.\s*/, ''));
+  const plainOptions = options.map((option) => stripOptionPrefix(option));
   const correctOptionIndex = ANSWER_LETTERS.indexOf(answer);
   const shuffledOptions = shuffleArray(
     plainOptions.map((optionText, optionIndex) => ({
@@ -115,6 +119,11 @@ let state = {
   currentQ: 0,
   submitted: false,
 };
+let submitPending = false;
+let submitPendingTimeoutId = 0;
+let resultScoreIntervalId = 0;
+let resultRingTimeoutId = 0;
+let toastTimeoutId = 0;
 
 // ─── Views ────────────────────────────────────────────────
 const VIEWS = {
@@ -131,6 +140,48 @@ function showView(name) {
   // Show/hide ocean bg (home has its own hero bg)
   oceanBg.style.display = name === 'home' ? 'none' : 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetSubmitWarning() {
+  submitPending = false;
+  clearTimeout(submitPendingTimeoutId);
+  submitPendingTimeoutId = 0;
+  document.getElementById('unanswered-warning').style.display = 'none';
+}
+
+function resetReviewSection() {
+  const reviewSection = document.getElementById('review-section');
+  const reviewButton = document.getElementById('toggle-review-btn');
+
+  reviewSection.classList.remove('open');
+  reviewButton.textContent = 'Review Answers ▼';
+  reviewButton.setAttribute('aria-expanded', 'false');
+}
+
+function resetResultView() {
+  clearInterval(resultScoreIntervalId);
+  clearTimeout(resultRingTimeoutId);
+  resultScoreIntervalId = 0;
+  resultRingTimeoutId = 0;
+  document.getElementById('score-num').textContent = '0';
+  document.getElementById('score-ring').style.background =
+    'conic-gradient(var(--gold) 0deg, rgba(245,197,24,0.08) 0deg)';
+  document.getElementById('review-list').textContent = '';
+  resetReviewSection();
+}
+
+function resetQuizState(characterName = '') {
+  state = {
+    characterName,
+    questions: [],
+    userAnswers: {},
+    score: 0,
+    currentQ: 0,
+    submitted: false,
+  };
+
+  resetSubmitWarning();
+  resetResultView();
 }
 
 // ─── Background Particles & Stars ─────────────────────────
@@ -175,8 +226,7 @@ homeForm.addEventListener('submit', async (e) => {
   const name = charInput.value.trim();
   if (!name) { charInput.focus(); return; }
 
-  // Reset state
-  state = { characterName: name, questions: [], userAnswers: {}, score: 0, currentQ: 0, submitted: false };
+  resetQuizState(name);
   homeError.style.display = 'none';
   startBtn.disabled = true;
   startBtn.textContent = '⏳  Setting Sail…';
@@ -185,7 +235,7 @@ homeForm.addEventListener('submit', async (e) => {
   showView('loading');
 
   try {
-    const quizData = await generateQuestions(name);
+    const quizData = generateQuestions(name);
     state.characterName = quizData.characterName;
     state.questions = quizData.questions;
     renderQuiz();
@@ -202,7 +252,7 @@ homeForm.addEventListener('submit', async (e) => {
 });
 
 // ─── Static Question Bank ─────────────────────────────────
-async function generateQuestions(character) {
+function generateQuestions(character) {
   const deck = resolveCharacterDeck(character);
   const questions = shuffleArray(deck.questions)
     .slice(0, TOTAL_QUESTIONS)
@@ -256,36 +306,75 @@ function refreshDots() {
   document.getElementById('live-answered').textContent = answered;
 }
 
+function createOptionButton(qi, letter, optionText) {
+  const optionLabel = stripOptionPrefix(optionText);
+  const isSelected = state.userAnswers[qi] === letter;
+  const button = document.createElement('button');
+  const optionLetter = document.createElement('span');
+  const optionTextSpan = document.createElement('span');
+
+  button.type = 'button';
+  button.className = 'option-btn';
+  button.id = `opt-${qi}-${letter}`;
+  button.dataset.qi = String(qi);
+  button.dataset.letter = letter;
+  button.setAttribute('aria-label', `Option ${letter}: ${optionLabel}`);
+
+  if (isSelected) {
+    button.classList.add('selected');
+  }
+
+  if (state.submitted) {
+    button.disabled = true;
+
+    if (letter === state.questions[qi].answer) {
+      button.classList.add('correct');
+    } else if (isSelected) {
+      button.classList.add('wrong');
+    }
+  }
+
+  button.addEventListener('click', () => selectOption(qi, letter, button));
+
+  optionLetter.className = 'opt-letter';
+  optionLetter.textContent = letter;
+  optionTextSpan.textContent = optionLabel;
+
+  button.append(optionLetter, optionTextSpan);
+
+  return button;
+}
+
+function createQuestionCard(qi, q, dir) {
+  const card = document.createElement('div');
+  const number = document.createElement('div');
+  const text = document.createElement('div');
+  const optionsList = document.createElement('div');
+
+  card.className = `question-card slide-enter-${dir}`;
+  number.className = 'q-number';
+  text.className = 'q-text';
+  optionsList.className = 'options-list';
+  optionsList.id = `opts-${qi}`;
+
+  number.textContent = `Question ${qi + 1} of ${TOTAL_QUESTIONS}`;
+  text.textContent = q.question;
+
+  q.options.forEach((optionText, optionIndex) => {
+    optionsList.appendChild(createOptionButton(qi, ANSWER_LETTERS[optionIndex], optionText));
+  });
+
+  card.append(number, text, optionsList);
+
+  return card;
+}
+
 function showQuestion(qi, dir = 'right') {
   const wrap = document.getElementById('q-slide-wrap');
   const q = state.questions[qi];
   if (!q) return;
 
-  const letters = ['A', 'B', 'C', 'D'];
-  const card = document.createElement('div');
-  card.className = `question-card slide-enter-${dir}`;
-  card.innerHTML = `
-    <div class="q-number">Question ${qi + 1} of ${TOTAL_QUESTIONS}</div>
-    <div class="q-text">${q.question}</div>
-    <div class="options-list" id="opts-${qi}">
-      ${q.options.map((opt, oi) => {
-        const letter = letters[oi];
-        const isSelected = state.userAnswers[qi] === letter;
-        return `
-          <button
-            class="option-btn${isSelected ? ' selected' : ''}${state.submitted ? (letter === q.answer ? ' correct' : (isSelected ? ' wrong' : '')) : ''}"
-            id="opt-${qi}-${letter}"
-            data-qi="${qi}" data-letter="${letter}"
-            onclick="selectOption(${qi},'${letter}',this)"
-            ${state.submitted ? 'disabled' : ''}
-            aria-label="Option ${letter}: ${opt.replace(/^[A-D]\.\s*/, '')}"
-          >
-            <span class="opt-letter">${letter}</span>
-            <span>${opt.replace(/^[A-D]\.\s*/, '')}</span>
-          </button>`;
-      }).join('')}
-    </div>
-  `;
+  const card = createQuestionCard(qi, q, dir);
 
   // Remove old card with exit animation
   const old = wrap.querySelector('.question-card');
@@ -334,7 +423,7 @@ function updateSubmitWrap() {
 function selectOption(qi, letter, btn) {
   if (state.submitted) return;
   // Deselect all in this question
-  ['A','B','C','D'].forEach(l => {
+  ANSWER_LETTERS.forEach(l => {
     const b = document.getElementById(`opt-${qi}-${l}`);
     if (b) b.classList.remove('selected');
   });
@@ -351,8 +440,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrev(); }
     if (['1','2','3','4'].includes(e.key)) {
       e.preventDefault();
-      const letters = ['A','B','C','D'];
-      const letter  = letters[parseInt(e.key) - 1];
+      const letter  = ANSWER_LETTERS[parseInt(e.key, 10) - 1];
       const btn = document.getElementById(`opt-${state.currentQ}-${letter}`);
       if (btn) selectOption(state.currentQ, letter, btn);
     }
@@ -364,7 +452,6 @@ document.getElementById('prev-btn').addEventListener('click', goPrev);
 document.getElementById('next-btn').addEventListener('click', goNext);
 
 // ─── Quiz: Submit ─────────────────────────────────────────
-let submitPending = false;
 document.getElementById('submit-quiz-btn').addEventListener('click', () => {
   const answered = Object.keys(state.userAnswers).length;
   const warn = document.getElementById('unanswered-warning');
@@ -374,11 +461,14 @@ document.getElementById('submit-quiz-btn').addEventListener('click', () => {
     warn.style.display = 'block';
     warn.textContent = `⚠️ ${missing} question(s) unanswered. Click again to submit anyway.`;
     submitPending = true;
-    setTimeout(() => { submitPending = false; warn.style.display = 'none'; }, 4000);
+    clearTimeout(submitPendingTimeoutId);
+    submitPendingTimeoutId = setTimeout(() => {
+      resetSubmitWarning();
+    }, 4000);
     return;
   }
 
-  warn.style.display = 'none';
+  resetSubmitWarning();
   finalizeQuiz();
 });
 
@@ -387,7 +477,7 @@ function finalizeQuiz() {
 
   // Mark all answers visually on current question and everywhere
   state.questions.forEach((q, qi) => {
-    ['A','B','C','D'].forEach(letter => {
+    ANSWER_LETTERS.forEach((letter) => {
       const btn = document.getElementById(`opt-${qi}-${letter}`);
       if (!btn) return;
       btn.disabled = true;
@@ -413,21 +503,33 @@ function finalizeQuiz() {
 function renderResults() {
   const score  = state.score;
   const coupon = getCoupon(score);
+  const scoreRing = document.getElementById('score-ring');
 
   // Animated score counter
   const numEl = document.getElementById('score-num');
+  clearInterval(resultScoreIntervalId);
+  clearTimeout(resultRingTimeoutId);
   numEl.textContent = '0';
-  let count = 0;
-  const tick = setInterval(() => {
-    count++;
-    numEl.textContent = count;
-    if (count >= score) clearInterval(tick);
-  }, 120);
+  scoreRing.style.background =
+    'conic-gradient(var(--gold) 0deg, rgba(245,197,24,0.08) 0deg)';
+
+  if (score > 0) {
+    let count = 0;
+    resultScoreIntervalId = setInterval(() => {
+      count += 1;
+      numEl.textContent = String(count);
+
+      if (count >= score) {
+        clearInterval(resultScoreIntervalId);
+        resultScoreIntervalId = 0;
+      }
+    }, 120);
+  }
 
   // Score ring (animates after a brief delay)
-  setTimeout(() => {
+  resultRingTimeoutId = setTimeout(() => {
     const deg = (score / TOTAL_QUESTIONS) * 360;
-    document.getElementById('score-ring').style.background =
+    scoreRing.style.background =
       `conic-gradient(var(--gold) ${deg}deg, rgba(245,197,24,0.08) ${deg}deg)`;
   }, 300);
 
@@ -472,30 +574,70 @@ function renderResults() {
 
 function renderReview() {
   const list = document.getElementById('review-list');
-  list.innerHTML = '';
+  list.textContent = '';
   state.questions.forEach((q, qi) => {
     const userAns = state.userAnswers[qi];
     const correct = userAns === q.answer;
     const div = document.createElement('div');
+    const questionLine = document.createElement('div');
+    const answerLine = document.createElement('div');
     div.className = `review-item ${correct ? 'correct' : 'wrong'}`;
     div.style.animationDelay = `${qi * 0.05}s`;
-    const corrOpt = q.options.find(o => o.startsWith(q.answer + '.')) || q.answer;
-    const userOpt = userAns ? (q.options.find(o => o.startsWith(userAns + '.')) || userAns) : null;
-    div.innerHTML = `
-      <div class="review-q">${qi + 1}. ${q.question}</div>
-      ${userOpt
-        ? `<div class="review-ans">${correct ? '✅' : '❌'} You: ${userOpt}</div>`
-        : `<div class="review-ans">❓ Not answered</div>`}
-      ${!correct ? `<div class="review-correct">✅ Correct: ${corrOpt}</div>` : ''}
-    `;
+    const corrOpt = q.options.find((option) => option.startsWith(`${q.answer}.`)) || q.answer;
+    const userOpt = userAns
+      ? (q.options.find((option) => option.startsWith(`${userAns}.`)) || userAns)
+      : null;
+
+    questionLine.className = 'review-q';
+    questionLine.textContent = `${qi + 1}. ${q.question}`;
+
+    answerLine.className = 'review-ans';
+    answerLine.textContent = userOpt
+      ? `${correct ? '✅' : '❌'} You: ${userOpt}`
+      : '❓ Not answered';
+
+    div.append(questionLine, answerLine);
+
+    if (!correct) {
+      const correctLine = document.createElement('div');
+      correctLine.className = 'review-correct';
+      correctLine.textContent = `✅ Correct: ${corrOpt}`;
+      div.appendChild(correctLine);
+    }
+
     list.appendChild(div);
   });
 }
 
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const helper = document.createElement('textarea');
+  helper.value = text;
+  helper.setAttribute('readonly', '');
+  helper.style.position = 'absolute';
+  helper.style.left = '-9999px';
+  document.body.appendChild(helper);
+  helper.select();
+  document.execCommand('copy');
+  helper.remove();
+}
+
 // Copy coupon
-document.getElementById('copy-coupon-btn').addEventListener('click', () => {
+document.getElementById('copy-coupon-btn').addEventListener('click', async () => {
   const code = document.getElementById('coupon-code').textContent;
-  navigator.clipboard.writeText(code).then(() => showToast(`"${code}" copied to clipboard!`));
+  if (!code) return;
+
+  try {
+    await copyTextToClipboard(code);
+    showToast(`"${code}" copied to clipboard!`);
+  } catch (error) {
+    console.error(error);
+    showToast('Clipboard access failed. Copy the code manually.');
+  }
 });
 
 // Review toggle
@@ -511,13 +653,16 @@ document.getElementById('toggle-review-btn').addEventListener('click', () => {
 document.getElementById('play-again-btn').addEventListener('click', () => {
   charInput.value = state.characterName;
   homeError.style.display = 'none';
+  resetSubmitWarning();
   showView('home');
+  setTimeout(() => charInput.focus(), 300);
 });
 
 // New Character
 document.getElementById('new-char-btn').addEventListener('click', () => {
   charInput.value = '';
   homeError.style.display = 'none';
+  resetQuizState();
   showView('home');
   setTimeout(() => charInput.focus(), 300);
 });
@@ -547,15 +692,17 @@ function launchConfetti() {
 // ─── Toast ────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
+  clearTimeout(toastTimeoutId);
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  toastTimeoutId = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 // ─── Init ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   populateCharacterSelect();
   initBg();
+  resetQuizState();
   showView('home');
   charInput.focus();
 });
