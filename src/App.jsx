@@ -30,7 +30,7 @@ const committeeDirectory = [
     contactNumber: "78109 82910",
   },
   {
-    name: "Aayushman Khatyat",
+    name: "Aayushman Kathayat",
     year: "3",
     position: "Vice - Chairperson",
     raNo: "RA2311003011227",
